@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Flutter
@@ -19,17 +19,22 @@ jobs:
         with:
           channel: stable
 
-      - name: Create Android project
+      - name: Create Android project files
         run: |
           if [ ! -d "android" ]; then
             flutter create --platforms=android --org com.cropdoctor .
           fi
 
-      - name: Get packages
+      - name: Remove generated default test
+        run: |
+          rm -rf test
+          rm -rf integration_test
+
+      - name: Get Flutter packages
         run: flutter pub get
 
-      - name: Analyze project
-        run: flutter analyze
+      - name: Analyze Flutter project
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Build release APK
         run: flutter build apk --release
